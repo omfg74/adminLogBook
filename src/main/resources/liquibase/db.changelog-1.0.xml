@@ -1,0 +1,87 @@
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.0"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.0 https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.0.xsd">
+    <changeSet id="1.0.0" author="alexander.podshivalov">
+        <createTable tableName="users" >
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="username" type="VARCHAR(100)">
+                <constraints primaryKey="false" nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(255)">
+                <constraints primaryKey="false" nullable="false"/>
+            </column>
+            <column name="first_name" type="VARCHAR(100)">
+                <constraints primaryKey="false"/>
+            </column>
+            <column name="last_name" type="VARCHAR(100)">
+                <constraints primaryKey="false"/>
+            </column>
+            <column name="password" type="VARCHAR(255)">
+                <constraints primaryKey="false"/>
+            </column>
+            <column name="created" type="TIMESTAMP" defaultValue="CURRENT_TIMESTAMP()">
+                <constraints primaryKey="false"/>
+            </column>
+            <column name="updated" type="TIMESTAMP" defaultValue="CURRENT_TIMESTAMP()">
+                <constraints primaryKey="false"/>
+            </column>
+            <column name="status" type="VARCHAR(25)" defaultValue="ACTIVE">
+                <constraints primaryKey="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1.0.1" author="alexander.podshivalov">
+        <createTable tableName="roles">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(100)">
+                <constraints primaryKey="false" nullable="false"/>
+            </column>
+            <column name="created" type="TIMESTAMP" defaultValue="CURRENT_TIMESTAMP()">
+                <constraints primaryKey="false"/>
+            </column>
+            <column name="updated" type="TIMESTAMP" defaultValue="CURRENT_TIMESTAMP()">
+                <constraints primaryKey="false"/>
+            </column>
+            <column name="status" type="VARCHAR(25)" defaultValue="ACTIVE">
+                <constraints primaryKey="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1.0.2" author="alexander.podshivalov">
+        <createTable tableName="user_roles">
+            <column name="user_id" type="BIGINT">
+            </column>
+            <column name="role_id" type="BIGINT">
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1.0.3" author="alexander.podshivalov">
+        <addForeignKeyConstraint baseColumnNames="role_id"
+                                 baseTableName="user_roles"
+                                 constraintName="fk_user_roles_user"
+                                 referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+    <changeSet id="1.0.4" author="alexander.podshivalov">
+        <addForeignKeyConstraint baseColumnNames="role_id"
+                                 baseTableName="user_roles"
+                                 constraintName="fk_user_roles_roles"
+                                 referencedColumnNames="id"
+                                 referencedTableName="roles"/>
+    </changeSet>
+    <changeSet id="1.0.5" author="alexander.podshivalov">
+        <insert tableName="roles">
+            <column name="name" value="ROLE_USER">
+            </column>
+        </insert>
+        <insert tableName="roles">
+            <column name="name" value="ROLE_ADMIN">
+            </column>
+        </insert>
+
+    </changeSet>
+</databaseChangeLog>
