@@ -16,6 +16,8 @@ public class JwtUser implements UserDetails {
     private final String password;
     private final String email;
     private final boolean enabled;
+    private final boolean isAccountNonLocked = true;
+    private final boolean notExpired = true;
     private final Date lastPasswordResetDate;
     private final Collection<? extends GrantedAuthority> authorities;
 
@@ -30,7 +32,6 @@ public class JwtUser implements UserDetails {
         this.lastPasswordResetDate = lastPasswordResetDate;
         this.authorities = authorities;
     }
-
 
 
     @JsonIgnore
@@ -66,30 +67,30 @@ public class JwtUser implements UserDetails {
 
     @Override
     public String getPassword() {
-        return null;
+        return password;
     }
 
     @Override
     public String getUsername() {
-        return null;
+        return userName;
     }
 
     @Override
     @JsonIgnore
     public boolean isAccountNonExpired() {
-        return false;
+        return notExpired;
     }
 
     @Override
     @JsonIgnore
     public boolean isAccountNonLocked() {
-        return false;
+        return isAccountNonLocked;
     }
 
     @Override
     @JsonIgnore
     public boolean isCredentialsNonExpired() {
-        return false;
+        return notExpired;
     }
 
     @Override

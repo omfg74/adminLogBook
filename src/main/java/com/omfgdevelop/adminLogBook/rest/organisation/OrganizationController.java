@@ -23,13 +23,13 @@ public class OrganizationController extends BaseController {
     private OrganisationService organisationService;
 
     @PostMapping(value = "create")
-    public ResponseEntity<Organization> createOrganisation(@RequestHeader("Authorization") String authHeader, OrganizationDto dto) {
+    public ResponseEntity<Organization> createOrganisation(@RequestHeader("Authorization") String authHeader, String organizationName) {
         User user = resolveUser(authHeader);
         if (user == null) {
             throw new UsernameNotFoundException("No user found");
 //            return ResponseEntity.notFound();
         }
-        Organization organization = organisationService.addOrganization(user, dto.getOrganizationName());
+        Organization organization = organisationService.addOrganization(user, organizationName);
         return ResponseEntity.ok(organization);
     }
 

@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +40,7 @@ public class AuthenticationRestControllerV1 {
     }
 
     private Map<Object, Object> createToken(User user) {
-        String token = jwtTokenProvider.createToken(user.getUserName(), user.getRoles(),user.getId());
+        String token = jwtTokenProvider.createToken(user.getUserName(), user.getRoles(), user.getId());
 
         Map<Object, Object> response = new HashMap<>();
         response.put("username", user.getUserName());
@@ -52,12 +53,13 @@ public class AuthenticationRestControllerV1 {
 
         try {
             String userName = requestDto.getUserName();
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userName, requestDto.getPassword()));
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userName, requestDto.getPassword()));
             User user = userService.findByUserName(userName);
             if (user == null) {
                 throw new UsernameNotFoundException("User with username " + userName + " not found");
             }
             Map<Object, Object> response = createToken(user);
+//            response.put("user", user);
 
             return ResponseEntity.ok(response);
         } catch (AuthenticationException e) {
