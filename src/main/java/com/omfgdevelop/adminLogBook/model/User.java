@@ -6,8 +6,8 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "user")
-@Data
+@Table(name = "users")
+//@Data
 public class User extends BaseEntity {
 
     @Column(name = "username")

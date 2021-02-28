@@ -1,6 +1,8 @@
 package com.omfgdevelop.adminLogBook.rest;
 
 import com.omfgdevelop.adminLogBook.dto.AuthenticationRequestDto;
+import com.omfgdevelop.adminLogBook.dto.RegistrationDto;
+import com.omfgdevelop.adminLogBook.exception.UserExistsException;
 import com.omfgdevelop.adminLogBook.model.User;
 import com.omfgdevelop.adminLogBook.security.jwt.JwtTokenProvider;
 import com.omfgdevelop.adminLogBook.service.UserService;
@@ -36,8 +38,17 @@ public class AuthenticationRestControllerV1 {
         this.userService = userService;
     }
 
+    private Map<Object, Object> createToken(User user) {
+        String token = jwtTokenProvider.createToken(user.getUserName(), user.getRoles());
+
+        Map<Object, Object> response = new HashMap<>();
+        response.put("username", user.getUserName());
+        response.put("token", token);
+        return response;
+    }
+
     @PostMapping("login")
-    public ResponseEntity login(@RequestBody AuthenticationRequestDto requestDto) {
+    public ResponseEntity<Map<Object, Object>> login(@ModelAttribute AuthenticationRequestDto requestDto) {
 
         try {
             String userName = requestDto.getUserName();
@@ -45,17 +56,36 @@ public class AuthenticationRestControllerV1 {
             User user = userService.findByUserName(userName);
             if (user == null) {
                 throw new UsernameNotFoundException("User with username " + userName + " not found");
-
             }
-            String token = jwtTokenProvider.createToken(userName, user.getRoles());
-
-            Map<Object, Object> response = new HashMap<>();
-            response.put("username", userName);
-            response.put("token", token);
+            Map<Object, Object> response = createToken(user);
 
             return ResponseEntity.ok(response);
         } catch (AuthenticationException e) {
             throw new BadCredentialsException("INvalid Username or password");
         }
     }
+
+    @PostMapping(path = "register")
+    public ResponseEntity<Map<Object, Object>> register(@ModelAttribute RegistrationDto registrationDto) {
+        try {
+            User existUser = userService.findByEmail(registrationDto.getEmail());
+            if (existUser != null) {
+                throw new UserExistsException("User already exists");
+            }
+            User user = new User();
+            user.setEmail(registrationDto.getEmail());
+            user.setFirstname(registrationDto.getFirstName());
+            user.setUserName(registrationDto.getUserName());
+            user.setLastName(registrationDto.getLastName());
+            user.setPassword(registrationDto.getPassword());
+            User registeredUser = userService.register(user);
+            Map<Object, Object> response = createToken(registeredUser);
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BadCredentialsException("Registration Error");
+        }
+    }
+
 }

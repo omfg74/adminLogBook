@@ -12,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -39,7 +40,7 @@ public class UserServiceImpl implements UserService {
         user.setStatus(Status.ACTIVE);
         User registerUser = userRepository.save(user);
         System.out.println("Register " + registerUser);
-        return registerUser;
+        return user;
     }
 
     @Override
@@ -54,6 +55,12 @@ public class UserServiceImpl implements UserService {
         User result = userRepository.findByUserName(username);
         System.out.println("User found " + result.getUserName());
         return result;
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        User user = userRepository.findUserByEmail(email);
+        return user;
     }
 
     @Override

@@ -7,7 +7,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "roles")
-@Data
+//@Data
 public class Role extends BaseEntity {
 
     @Column(name = "name")
