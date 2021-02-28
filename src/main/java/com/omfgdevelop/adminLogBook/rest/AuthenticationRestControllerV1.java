@@ -39,7 +39,7 @@ public class AuthenticationRestControllerV1 {
     }
 
     private Map<Object, Object> createToken(User user) {
-        String token = jwtTokenProvider.createToken(user.getUserName(), user.getRoles());
+        String token = jwtTokenProvider.createToken(user.getUserName(), user.getRoles(),user.getId());
 
         Map<Object, Object> response = new HashMap<>();
         response.put("username", user.getUserName());

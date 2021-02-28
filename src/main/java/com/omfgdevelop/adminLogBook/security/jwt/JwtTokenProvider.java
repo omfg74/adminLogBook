@@ -44,13 +44,14 @@ public class JwtTokenProvider {
 
     @PostConstruct
     protected void init() {
-//        secret = Base64.getEncoder().encodeToString(secret.getBytes());
+        secret = Base64.getEncoder().encodeToString(secret.getBytes());
     }
 
-    public String createToken(String username, List<Role> roles) {
+    public String createToken(String username, List<Role> roles, Long id) {
         SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
-        Key key = new SecretKeySpec( Base64.getEncoder().encodeToString(secret.getBytes()).getBytes(), signatureAlgorithm.getJcaName());
+        Key key = new SecretKeySpec(secret.getBytes(), signatureAlgorithm.getJcaName());
         Claims claims = Jwts.claims().setSubject(username);
+        claims.put("id", id);
         claims.put("roles", getRoleNames(roles));
 
         Date now = new Date();
@@ -72,20 +73,32 @@ public class JwtTokenProvider {
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody().getSubject();
     }
 
+    public Long getUserId(String token) {
+        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody().get("id", Long.class);
+    }
+
     public String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
-        if (bearerToken != null && bearerToken.startsWith("Bearer_")) {
+       return parceToken(bearerToken);
+    }
+
+    private String parceToken(String bearerToken){
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7, bearerToken.length());
         }
         return null;
     }
 
+    public String resolveTokenString(String bearerToken) {
+        return parceToken(bearerToken);
+    }
+
     public boolean validateToken(String token) throws JwtAuthenticationException {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
-            if (claims.getBody().getExpiration().before(new Date())) {
-                return false;
-            }
+//            if (claims.getBody().getExpiration().before(new Date())) {
+//                return false;
+//            }
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             throw new JwtAuthenticationException("Jwt token expired or invalid");
